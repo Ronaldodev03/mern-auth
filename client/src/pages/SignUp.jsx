@@ -32,12 +32,14 @@ const SignUp = () => {
 
       if (data.success === false) {
         setError(true);
+        setTimeout(() => setError(false), 5000);
         return;
       }
       navigate("/signin");
     } catch (error) {
       setLoading(false);
       setError(true);
+      setTimeout(() => setError(false), 5000);
     }
   };
 

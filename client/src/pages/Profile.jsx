@@ -27,6 +27,7 @@ export default function Profile() {
   const [imageError, setImageError] = useState(false);
   const [formData, setFormData] = useState({});
   const [updateSuccess, setUpdateSuccess] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   const { currentUser, loading, error } = useSelector((state) => state.user);
 
@@ -51,14 +52,24 @@ export default function Profile() {
       },
       (error) => {
         setImageError(true);
+        setTimeout(() => setImageError(false), 5000);
+        setImagePercent(0);
       },
       () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) =>
-          setFormData({ ...formData, profilePicture: downloadURL })
-        );
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          setFormData({ ...formData, profilePicture: downloadURL });
+
+          setShowSuccessMessage(true);
+          setTimeout(() => setShowSuccessMessage(false), 5000);
+          setImagePercent(0);
+        });
       }
     );
   };
+
+  /*   if (imagePercent === 100) {
+    setTimeout(() => setImagePercent(0), 5000);
+  } */
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
@@ -82,8 +93,10 @@ export default function Profile() {
       }
       dispatch(updateUserSuccess(data));
       setUpdateSuccess(true);
+      setTimeout(() => setUpdateSuccess(false), 5000);
     } catch (error) {
       dispatch(updateUserFailure(error));
+      setTimeout(() => updateUserFailure(false), 5000);
     }
   };
 
@@ -136,7 +149,7 @@ export default function Profile() {
             </span>
           ) : imagePercent > 0 && imagePercent < 100 ? (
             <span className="text-slate-700">{`Uploading: ${imagePercent} %`}</span>
-          ) : imagePercent === 100 ? (
+          ) : showSuccessMessage ? (
             <span className="text-green-700">Image uploaded successfully</span>
           ) : (
             ""

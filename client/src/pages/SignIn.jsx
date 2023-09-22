@@ -1,4 +1,5 @@
-import { useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   signInStart,
@@ -11,6 +12,10 @@ const SignIn = () => {
   const [formData, setFormData] = useState({});
   const { loading, error } = useSelector((state) => state.user);
 
+  useEffect(() => {
+    dispatch(signInFailure(false));
+  }, []);
+
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
@@ -18,6 +23,7 @@ const SignIn = () => {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -35,12 +41,15 @@ const SignIn = () => {
 
       if (data.success === false) {
         dispatch(signInFailure(data));
+        setTimeout(() => dispatch(signInFailure(false)), 3000);
+
         return;
       }
       dispatch(signInSuccess(data));
       navigate("/");
     } catch (error) {
       dispatch(signInFailure(error));
+      setTimeout(() => dispatch(signInFailure(false)), 3000);
     }
   };
   return (
