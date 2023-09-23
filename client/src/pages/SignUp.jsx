@@ -14,32 +14,51 @@ const SignUp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
       setLoading(true);
       setError(false);
+
+      // Eliminar espacios en blanco de los valores antes de la validación
+      const trimmedFormData = {
+        username: formData.username.trim(),
+        email: formData.email.trim(),
+        password: formData.password.trim(),
+      };
+
+      // Validar si los campos están vacíos aquí
+      if (
+        !trimmedFormData.username ||
+        !trimmedFormData.email ||
+        !trimmedFormData.password
+      ) {
+        setError(true);
+        setLoading(false);
+        setTimeout(() => setError(false), 3000);
+        return;
+      }
 
       const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(trimmedFormData),
       });
 
       const data = await res.json();
-
       setLoading(false);
 
       if (data.success === false) {
         setError(true);
-        setTimeout(() => setError(false), 5000);
+        setTimeout(() => setError(false), 3000);
         return;
       }
       navigate("/signin");
     } catch (error) {
       setLoading(false);
       setError(true);
-      setTimeout(() => setError(false), 5000);
+      setTimeout(() => setError(false), 3000);
     }
   };
 
